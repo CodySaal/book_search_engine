@@ -4,20 +4,19 @@ const { signToken } = require("../utils/auth")
 
 const resolvers = {
     Query: {
-        me: async (parent, { _id, username }, context, info) => {
-            if (username) {
-                return await User.findOne({ username })
+        me: async (parent, args, context, info) => {
+            if (context.user) {
+                return await User.findOne({ _id: context.user._id }).populate("savedBooks")
             }
-            return await User.findById(_id)
         }
     },
     Mutation: {
         login: async (parent, { email, password }, context, info) => {
             const user = await User.findOne({ email })
             if (!user) {
-                throw new AuthenticationError("No user found.")
+                throw new AuthenticationError("User not found.")
             }
-            const correctPassword = await user.iscorrectPassword(password)
+            const correctPassword = await user.isCorrectPassword(password)
             if (!correctPassword) {
                 throw new AuthenticationError("Incorrect password.")
             }
@@ -33,23 +32,28 @@ const resolvers = {
             return auth
         },
 
-        saveBook: async (parent, { _id, input }, context, info) => {
-            return await User.findOneAndUpdate(
-                {_id},
-                {$addToSet: { savedBooks: input}},
-                { new: true }
-            )
+        saveBook: async (parent, { input }, context, info) => {
+            if (context.user) {
+                const updatedUser = await User.findByIdAndUpdate(
+                    {_id: context.user._id},
+                    {$addToSet: { savedBooks: input}},
+                    { new: true }
+                )
+                return updatedUser
+            }
         },
 
-        removeBook: async (parent, { _id, bookId }, context, info)  => {
-            return await User.findOneAndUpdate(
-                {_id},
-                { $pull: {savedBooks: bookId}},
-                { new: true }
-            )
+        removeBook: async (parent, { bookId }, context, info)  => {
+            if (context.user) {
+                const updatedUser = await User.findByIdAndUpdate(
+                    {_id: context.user._id},
+                    { $pull: {savedBooks: bookId}},
+                    { new: true }
+                )
+                    return updatedUser
+            }
         }
     }
-
 }
 
 module.exports = resolvers
