@@ -8,6 +8,7 @@ const resolvers = {
             if (context.user) {
                 return await User.findOne({ _id: context.user._id }).populate("savedBooks")
             }
+            throw new AuthenticationError("Must be logged in.")
         }
     },
     Mutation: {
@@ -21,8 +22,7 @@ const resolvers = {
                 throw new AuthenticationError("Incorrect password.")
             }
             const token = signToken(user)
-            const auth = { token, user }
-            return auth
+            return { token, user }
         },
 
         addUser: async (parent, { username, email, password }) => {
@@ -33,7 +33,7 @@ const resolvers = {
 
         saveBook: async (parent, { input }, context, info) => {
             if (context.user) {
-                const updatedUser = await User.findByIdAndUpdate(
+                const updatedUser = await User.findOneAndUpdate(
                     {_id: context.user._id},
                     {$addToSet: { savedBooks: input}},
                     { new: true }
@@ -44,9 +44,9 @@ const resolvers = {
 
         removeBook: async (parent, { bookId }, context, info)  => {
             if (context.user) {
-                const updatedUser = await User.findByIdAndUpdate(
+                const updatedUser = await User.findOneAndUpdate(
                     {_id: context.user._id},
-                    { $pull: {savedBooks: bookId}},
+                    { $pull: {savedBooks: {bookId}}},
                     { new: true }
                 )
                     return updatedUser
