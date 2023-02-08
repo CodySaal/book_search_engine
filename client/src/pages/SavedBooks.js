@@ -11,17 +11,8 @@ import { REMOVE_BOOK } from '../utils/mutations';
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME)
   const [removeBook] = useMutation(REMOVE_BOOK)
-  const userData = data?.me || {}
+  let userData = data?.me || {}
 
-  // Test
-  if(!userData?.username) {
-    return (
-      <h4>
-        You need to be logged in to view this page.
-      </h4>
-    )
-  }
-// End test
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null
 
@@ -30,13 +21,15 @@ const SavedBooks = () => {
     }
     
     try {
-      const { user } = await removeBook({
+      const { data } = await removeBook({
         variables: {
-          bookId,
+          bookId 
         }
       });
+      if (!data) {
+        throw new Error("Something went wrong.")
+      }
 
-      userData = user
       removeBookId(bookId)
     } catch (err) {
       console.error(err)
