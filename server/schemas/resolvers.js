@@ -25,11 +25,10 @@ const resolvers = {
             return auth
         },
 
-        addUser: async (parent, args, context, info) => {
-            const user = await User.create(args)
+        addUser: async (parent, { username, email, password }) => {
+            const user = await User.create({ username, email, password })
             const token = signToken(user)
-            const auth = { token, user }
-            return auth
+            return { token, user }
         },
 
         saveBook: async (parent, { input }, context, info) => {
