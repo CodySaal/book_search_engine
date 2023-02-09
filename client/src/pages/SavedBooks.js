@@ -10,8 +10,8 @@ import { REMOVE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME)
-  const [removeBook] = useMutation(REMOVE_BOOK)
   let userData = data?.me || {}
+  const [removeBook] = useMutation(REMOVE_BOOK)
 
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null
