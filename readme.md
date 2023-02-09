@@ -32,10 +32,10 @@ npm run develop
 The applications usage is fairly simple. A non logged in user is free to browse the site and search for books. In order to save books to a user they must be logged in. If a user does not already have an account they can sign up for and account and will then gain the functionality of adding books to their list. Once a book is added to a user's list they can go to their list and review books they have previously read. If they want to delete a book from their list that option is available as well.
 
 
-![Screenshot](assets/jatescreenshot.png)
+![Screenshot](assets/images/book_search_screenshot.png)
 
 
-[J.A.T.E](https://dry-island-47595.herokuapp.com/ "Deployed Text Editor")
+[Google Books Search](https://shielded-forest-16261.herokuapp.com/ "Deployed Google Books Search")
 
 ## Credits
 
